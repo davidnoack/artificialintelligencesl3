@@ -53,8 +53,4 @@ public class Stock {
     public int getMaxSize() {
         return maxSize;
     }
-
-    public void setMaxSize(int maxSize) {
-        this.maxSize = maxSize;
-    }
 }

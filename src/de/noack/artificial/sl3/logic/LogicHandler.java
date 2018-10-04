@@ -20,13 +20,11 @@ public class LogicHandler {
         return ourInstance;
     }
 
-    private LogicHandler() {
-        market = new Market(0);
+    public void initializeMarket(Integer stockSize) {
+        market = new Market(stockSize);
     }
 
     public void addItem(String name, Integer stock, Integer deliveryTime) {
-        stockSize += stock;
-        market.getStock().setMaxSize(stockSize);
         market.getStock().buyForInventory(new Item(name, deliveryTime), stock);
     }
 
@@ -41,6 +39,7 @@ public class LogicHandler {
         for (Map.Entry<Item, Integer> inventoryEntry : market.getStock().getInventory().entrySet()) {
             gridPane.add(new Label(inventoryEntry.getKey().getName()), xPos++, yPos);
             gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getDemand())), xPos++, yPos);
+            gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getDeliveryTime())), xPos++, yPos);
             gridPane.add(new Label(String.valueOf(inventoryEntry.getValue())), xPos++, yPos);
             gridPane.add(new Label(inventoryEntry.getKey().getRecommendation()), xPos++, yPos);
 

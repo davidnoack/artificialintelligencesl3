@@ -14,6 +14,7 @@ public class Item extends DomainElement {
         recommendation = "";
         demand = 0;
         this.deliveryTime = deliveryTime;
+        threshold = 0;
     }
 
     public String getName() {
@@ -38,10 +39,6 @@ public class Item extends DomainElement {
 
     public int getDeliveryTime() {
         return deliveryTime;
-    }
-
-    public void setDeliveryTime(int deliveryTime) {
-        this.deliveryTime = deliveryTime;
     }
 
     public int getThreshold() {

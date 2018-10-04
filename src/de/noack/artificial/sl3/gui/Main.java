@@ -20,7 +20,6 @@ public class Main extends Application {
     static int xPos = 0;
     static int yPos = 2;
     static Stage window;
-    static List<Scene> createItemPrompts = new ArrayList<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -31,77 +30,39 @@ public class Main extends Application {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         window = primaryStage;
         window.setTitle("Stock simulation Pt.2");
-        window.setScene(createItemCountPromptWindow());
+        createStockSizePromptWindow();
         window.setResizable(false);
         window.setFullScreen(false);
         window.show();
     }
 
-    private Scene createItemCountPromptWindow() {
+    private void createStockSizePromptWindow() {
 
-        Label label = new Label("Enter item count (max. 10):");
-        label.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        Label label = createLabel("Enter maximum stock size (G):");
 
-        TextField textField = new TextField();
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                textField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-            if (Integer.valueOf(textField.getText()) > 10) {
-                textField.setText("10");
-            }
-        });
-
+        TextField textField = createNumberTextField();
         Button button = new Button("Ok");
-        button.setOnAction(e -> commitCount(Integer.valueOf(textField.getText())));
+        button.setOnAction(e -> initializeMarket(Integer.valueOf(textField.getText())));
 
         VBox layout = new VBox(20);
         layout.getChildren().addAll(label, textField, button);
 
-        return new Scene(layout, 300, 100);
+        window.setScene(new Scene(layout, 260, 100));
     }
 
-    private void commitCount(int count) {
-        for (int i = 0; i < count; i++) {
-            TextField nameTextField = new TextField();
-            TextField stockTextField = createNumberTextField();
-            TextField deliveryTimeTextField = createNumberTextField();
-
-            Button button = new Button("Submit");
-
-            Scene scene = createItemPromptWindow(nameTextField, stockTextField, deliveryTimeTextField, button);
-
-            button.setOnAction(e -> addItem(nameTextField.getText(), Integer.valueOf(stockTextField.getText()), Integer.valueOf(deliveryTimeTextField.getText()), scene));
-
-            createItemPrompts.add(scene);
-        }
-        window.setScene(createItemPrompts.get(0));
-    }
-
-    private void addItem(String name, Integer stock, Integer deliveryTime, Scene scene) {
-        LogicHandler.getInstance().addItem(name, stock, deliveryTime);
-        nextWindow(scene);
-    }
-
-    private Scene createItemPromptWindow(TextField nameTextField, TextField stockTextField, TextField deliveryTimeTextField,
-                                         Button button) {
-
-        Label nameLabel = createLabel("Enter item name:");
-        Label stockLabel = createLabel("Enter initial stock count:");
-        Label deliveryTimeLabel = createLabel("Enter delivery time:");
-
-        VBox layout = new VBox(20);
-        layout.getChildren().addAll(nameLabel, nameTextField, stockLabel, stockTextField, deliveryTimeLabel, deliveryTimeTextField, button);
-
-        Scene scene = new Scene(layout, 300, 270);
-
-        return scene;
-    }
-
-    private void nextWindow(Scene scene) {
-        if (createItemPrompts.indexOf(scene) == createItemPrompts.size() - 1) {
-            initMainWindow();
-        } else window.setScene(createItemPrompts.get(createItemPrompts.indexOf(scene) + 1));
+    private void initializeMarket(Integer stockSize) {
+        LogicHandler.getInstance().initializeMarket(stockSize);
+        LogicHandler.getInstance().addItem("a", (int) Math.round(0.01 * stockSize), 3);
+        LogicHandler.getInstance().addItem("b", (int) Math.round(0.02 * stockSize), 2);
+        LogicHandler.getInstance().addItem("c", (int) Math.round(0.03 * stockSize), 1);
+        LogicHandler.getInstance().addItem("d", (int) Math.round(0.04 * stockSize), 7);
+        LogicHandler.getInstance().addItem("e", (int) Math.round(0.05 * stockSize), 3);
+        LogicHandler.getInstance().addItem("f", (int) Math.round(0.06 * stockSize), 1);
+        LogicHandler.getInstance().addItem("g", (int) Math.round(0.07 * stockSize), 6);
+        LogicHandler.getInstance().addItem("h", (int) Math.round(0.08 * stockSize), 4);
+        LogicHandler.getInstance().addItem("i", (int) Math.round(0.09 * stockSize), 3);
+        LogicHandler.getInstance().addItem("j", (int) Math.round(0.1 * stockSize), 2);
+        initMainWindow();
     }
 
     public static void initMainWindow() {
@@ -113,11 +74,13 @@ public class Main extends Application {
         GridPane gridPane = new GridPane();
 
         LogicHandler.getInstance().addStockSizeToDisplay(gridPane);
-        gridPane.add(new Label("Items:"), 0, 1);
-        gridPane.add(new Label("Demand:"), 1, 1);
-        gridPane.add(new Label("Deliverytime:"), 2, 1);
-        gridPane.add(new Label("Stock:"), 3, 1);
-        gridPane.add(new Label("Recommendation:"), 4, 1);
+        int column = 0;
+        gridPane.add(new Label("Items:"), column++, 1);
+        gridPane.add(new Label("Demand:"), column++, 1);
+        gridPane.add(new Label("Delivery time:"), column++, 1);
+        gridPane.add(new Label("Stock:"), column++, 1);
+        gridPane.add(new Label("Threshold:"), column++, 1);
+        gridPane.add(new Label("Recommendation:"), column++, 1);
 
         LogicHandler.getInstance().displayItemData(gridPane, xPos, yPos);
         return gridPane;

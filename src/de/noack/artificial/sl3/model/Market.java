@@ -40,9 +40,8 @@ public class Market extends DomainElement {
                 amountsPerItem.put(soldItems.getItem(), oldAmount + soldItems.getCount());
             }
         }
-        for (Map.Entry<Item, Integer> itemWithSellingCount : amountsPerItem.entrySet()) {
+        for (Map.Entry<Item, Integer> itemWithSellingCount : amountsPerItem.entrySet())
             itemWithSellingCount.getKey().setDemand(itemWithSellingCount.getValue() / amountOfAllSoldItems);
-        }
         refreshRecommendations();
     }
 
@@ -51,9 +50,7 @@ public class Market extends DomainElement {
             Item item = itemsInStock.getKey();
             double count = itemsInStock.getValue().doubleValue();
             String buy = "Buy for Inventory!";
-            if ((count < (stock.getMaxSize() * 0.1)) && (item.getDemand() > 0.5F)) {
-                item.setRecommendation(buy);
-            } else if (count == 0) {
+            if (count <= item.getThreshold()) {
                 item.setRecommendation(buy);
             } else {
                 item.setRecommendation("");
