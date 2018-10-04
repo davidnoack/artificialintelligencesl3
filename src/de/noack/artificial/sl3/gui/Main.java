@@ -30,7 +30,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         window = primaryStage;
-        window.setTitle("Stock simulation");
+        window.setTitle("Stock simulation Pt.2");
         window.setScene(createItemCountPromptWindow());
         window.setResizable(false);
         window.setFullScreen(false);
@@ -64,43 +64,36 @@ public class Main extends Application {
     private void commitCount(int count) {
         for (int i = 0; i < count; i++) {
             TextField nameTextField = new TextField();
-
-            TextField stockTextField = new TextField();
-            stockTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue.matches("\\d*")) {
-                    stockTextField.setText(newValue.replaceAll("[^\\d]", ""));
-                }
-            });
+            TextField stockTextField = createNumberTextField();
+            TextField deliveryTimeTextField = createNumberTextField();
 
             Button button = new Button("Submit");
 
-            Scene scene = createItemPromptWindow(nameTextField, stockTextField, button);
+            Scene scene = createItemPromptWindow(nameTextField, stockTextField, deliveryTimeTextField, button);
 
-            button.setOnAction(e -> addItem(nameTextField.getText(), Integer.valueOf(stockTextField.getText()), scene));
+            button.setOnAction(e -> addItem(nameTextField.getText(), Integer.valueOf(stockTextField.getText()), Integer.valueOf(deliveryTimeTextField.getText()), scene));
 
             createItemPrompts.add(scene);
         }
         window.setScene(createItemPrompts.get(0));
     }
 
-    private void addItem(String name, Integer stock, Scene scene) {
-        LogicHandler.getInstance().addItem(name, stock);
+    private void addItem(String name, Integer stock, Integer deliveryTime, Scene scene) {
+        LogicHandler.getInstance().addItem(name, stock, deliveryTime);
         nextWindow(scene);
     }
 
-    private Scene createItemPromptWindow(TextField nameTextField, TextField stockTextField,
+    private Scene createItemPromptWindow(TextField nameTextField, TextField stockTextField, TextField deliveryTimeTextField,
                                          Button button) {
 
-        Label nameLabel = new Label("Enter item name:");
-        nameLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-
-        Label stockLabel = new Label("Enter initial stock count:");
-        stockLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        Label nameLabel = createLabel("Enter item name:");
+        Label stockLabel = createLabel("Enter initial stock count:");
+        Label deliveryTimeLabel = createLabel("Enter delivery time:");
 
         VBox layout = new VBox(20);
-        layout.getChildren().addAll(nameLabel, nameTextField, stockLabel, stockTextField, button);
+        layout.getChildren().addAll(nameLabel, nameTextField, stockLabel, stockTextField, deliveryTimeLabel, deliveryTimeTextField, button);
 
-        Scene scene = new Scene(layout, 300, 200);
+        Scene scene = new Scene(layout, 300, 270);
 
         return scene;
     }
@@ -122,10 +115,27 @@ public class Main extends Application {
         LogicHandler.getInstance().addStockSizeToDisplay(gridPane);
         gridPane.add(new Label("Items:"), 0, 1);
         gridPane.add(new Label("Demand:"), 1, 1);
-        gridPane.add(new Label("Stock:"), 2, 1);
-        gridPane.add(new Label("Recommendation:"), 3, 1);
+        gridPane.add(new Label("Deliverytime:"), 2, 1);
+        gridPane.add(new Label("Stock:"), 3, 1);
+        gridPane.add(new Label("Recommendation:"), 4, 1);
 
         LogicHandler.getInstance().displayItemData(gridPane, xPos, yPos);
         return gridPane;
+    }
+
+    private Label createLabel(String labelText) {
+        Label label = new Label(labelText);
+        label.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        return label;
+    }
+
+    private TextField createNumberTextField() {
+        TextField numberTextField = new TextField();
+        numberTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                numberTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+        return numberTextField;
     }
 }

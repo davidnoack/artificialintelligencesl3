@@ -24,10 +24,10 @@ public class LogicHandler {
         market = new Market(0);
     }
 
-    public void addItem(String name, Integer stock) {
+    public void addItem(String name, Integer stock, Integer deliveryTime) {
         stockSize += stock;
         market.getStock().setMaxSize(stockSize);
-        market.getStock().buyForInventory(new Item(name), stock);
+        market.getStock().buyForInventory(new Item(name, deliveryTime), stock);
     }
 
     public void addStockSizeToDisplay(GridPane gridPane) {
