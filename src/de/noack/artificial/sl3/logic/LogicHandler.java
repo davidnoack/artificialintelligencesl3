@@ -11,52 +11,58 @@ import java.util.Map;
 
 public class LogicHandler {
 
-    Market market;
-    Integer stockSize = 0;
+	Market market;
 
-    private static LogicHandler ourInstance = new LogicHandler();
+	private static LogicHandler ourInstance = new LogicHandler();
 
-    public static LogicHandler getInstance() {
-        return ourInstance;
-    }
+	public static LogicHandler getInstance() {
+		return ourInstance;
+	}
 
-    public void initializeMarket(Integer stockSize) {
-        market = new Market(stockSize);
-    }
+	public void initializeMarket(Integer stockSize) {
+		market = new Market(stockSize);
+	}
 
-    public void addItem(String name, Integer stock, Integer deliveryTime) {
-        market.getStock().buyForInventory(new Item(name, deliveryTime), stock);
-    }
+	public void addItem(String name, Integer size, Integer deliveryTime) {
+		market.getStock().buyForInventory(new Item(name, deliveryTime, size), 0);
+	}
 
-    public void addStockSizeToDisplay(GridPane gridPane) {
-        gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize()), 0, 0);
-    }
+	public void addStockSizeToDisplay(GridPane gridPane) {
+		gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize() + "Left: " + market.getStock().getStockLeft()), 0, 0);
+	}
 
-    public void displayItemData(GridPane gridPane, int xPos, int yPos) {
+	public void displayItemData(GridPane gridPane, int xPos, int yPos) {
 
-        market.createCashpoint();
+		market.createCashpoint();
 
-        for (Map.Entry<Item, Integer> inventoryEntry : market.getStock().getInventory().entrySet()) {
-            gridPane.add(new Label(inventoryEntry.getKey().getName()), xPos++, yPos);
-            gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getDemand())), xPos++, yPos);
-            gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getDeliveryTime())), xPos++, yPos);
-            gridPane.add(new Label(String.valueOf(inventoryEntry.getValue())), xPos++, yPos);
-            gridPane.add(new Label(inventoryEntry.getKey().getRecommendation()), xPos++, yPos);
+		Button sellItem = new Button("Sell each Item once!");
+		sellItem.setOnAction(e -> sellEachItemOnce());
+		gridPane.add(sellItem, 0, 1);
 
-            Button sellItem = new Button("Sell to Customer!");
-            sellItem.setOnAction(e -> sellItemAndRefreshDisplay(inventoryEntry.getKey().getName()));
-            gridPane.add(sellItem, xPos++, yPos);
+		for (Map.Entry <Item, Integer> inventoryEntry : market.getStock().getInventory().entrySet()) {
+			gridPane.add(new Label(inventoryEntry.getKey().getName()), xPos++, yPos);
+			gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getSize())), xPos++, yPos);
+			gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getDeliveryTime())), xPos++, yPos);
+			gridPane.add(new Label(String.valueOf(inventoryEntry.getValue())), xPos++, yPos);
+			gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getThreshold())), xPos++, yPos);
+			gridPane.add(new Label(inventoryEntry.getKey().getRecommendation()), xPos++, yPos);
+			Button buyItem = new Button("Buy for Inventory!");
+			buyItem.setOnAction(e -> buyForInventory(inventoryEntry.getKey(), 1));
+			gridPane.add(buyItem, xPos, yPos++);
 
-            Button buyItem = new Button("Buy for Inventory!");
-            buyItem.setOnAction(e -> market.getStock().buyForInventory(inventoryEntry.getKey(), 1));
-            gridPane.add(buyItem, xPos, yPos++);
+			xPos = 0;
+		}
+	}
 
-            xPos = 0;
-        }
-    }
+	public void sellEachItemOnce() {
+		for (Map.Entry <Item, Integer> stockEntry : market.getStock().getInventory().entrySet()) {
+			market.getRandomCashpoint().sellItem(stockEntry.getKey().getName());
+		}
+		Main.initMainWindow();
+	}
 
-    public void sellItemAndRefreshDisplay(String itemName) {
-        market.getRandomCashpoint().sellItem(itemName);
-        Main.initMainWindow();
-    }
+	public void buyForInventory(Item item, int count) {
+		market.getStock().buyForInventory(item, count);
+		Main.initMainWindow();
+	}
 }

@@ -2,50 +2,50 @@ package de.noack.artificial.sl3.model;
 
 public class Item extends DomainElement {
 
-    private String name;
-    private double demand;
-    private String recommendation;
-    private int deliveryTime;
-    private int threshold;
+	private String name;
+	private String recommendation;
+	private int deliveryTime;
+	private int threshold;
+	private int size;
 
-    public Item(String name, int deliveryTime) {
-        super();
-        this.name = name;
-        recommendation = "";
-        demand = 0;
-        this.deliveryTime = deliveryTime;
-        threshold = 0;
-    }
+	public Item(String name, int deliveryTime, int size) {
+		super();
+		this.name = name;
+		recommendation = "";
+		this.deliveryTime = deliveryTime;
+		threshold = 0;
+		this.size = size;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public double getDemand() {
-        return demand;
-    }
+	public String getRecommendation() {
+		return recommendation;
+	}
 
-    public void setDemand(double demand) {
-        this.demand = demand;
-    }
+	public void setRecommendation(String recommendation) {
+		this.recommendation = recommendation;
+	}
 
-    public String getRecommendation() {
-        return recommendation;
-    }
+	public int getDeliveryTime() {
+		return deliveryTime;
+	}
 
-    public void setRecommendation(String recommendation) {
-        this.recommendation = recommendation;
-    }
+	public int getThreshold() {
+		return threshold;
+	}
 
-    public int getDeliveryTime() {
-        return deliveryTime;
-    }
+	public void setThreshold(int threshold) {
+		this.threshold = threshold;
+	}
 
-    public int getThreshold() {
-        return threshold;
-    }
+	public int getSize() {
+		return size;
+	}
 
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
-    }
+	public void setSize(int size) {
+		this.size = size;
+	}
 }
