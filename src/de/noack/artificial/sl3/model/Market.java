@@ -9,6 +9,7 @@ import java.util.Map;
 public class Market extends DomainElement {
 
 	private Stock stock;
+	private Orders orders = new Orders();
 
 	private HashSet <Cashpoint> cashpoints = new HashSet <>();
 
@@ -29,7 +30,7 @@ public class Market extends DomainElement {
 		return stock;
 	}
 
-	public void refreshRecommendations() {
+	public void refresh() {
 		for (Map.Entry <Item, Integer> itemsInStock : stock.getInventory().entrySet()) {
 			Item item = itemsInStock.getKey();
 			double count = itemsInStock.getValue().doubleValue();
@@ -40,6 +41,9 @@ public class Market extends DomainElement {
 				item.setRecommendation("");
 			}
 		}
+		for(Item item : orders.getDelivery()) {
+			stock.putToInventory(item);
+		}
 		Main.initMainWindow();
 	}
 
@@ -48,5 +52,9 @@ public class Market extends DomainElement {
 			return cashpoint;
 		}
 		return null;
+	}
+
+	public Orders getOrders() {
+		return orders;
 	}
 }

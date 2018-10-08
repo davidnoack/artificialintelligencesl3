@@ -11,7 +11,7 @@ public class Cashpoint extends DomainElement {
 
 	public void sellItem(String itemName) {
 		parent.getStock().retrieveSellableItem(itemName);
-		getParent().refreshRecommendations();
+		getParent().refresh();
 	}
 
 	public Market getParent() {

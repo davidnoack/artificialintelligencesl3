@@ -63,21 +63,21 @@ public class Main extends Application {
 	}
 
 	public static void initMainWindow() {
-		Scene mainScene = new Scene(loadMainWindow(), 640, 320);
+		Scene mainScene = new Scene(loadMainWindow(), 1024, 320);
 		window.setScene(mainScene);
 	}
 
 	private static GridPane loadMainWindow() {
 		GridPane gridPane = new GridPane();
 
-		LogicHandler.getInstance().addStockSizeToDisplay(gridPane);
+		LogicHandler.getInstance().addHeaderToDisplay(gridPane);
 		int column = 0;
-		gridPane.add(new Label(" Items: "), column++, 2);
-		gridPane.add(new Label(" Size: "), column++, 2);
-		gridPane.add(new Label(" Delivery time: "), column++, 2);
-		gridPane.add(new Label(" Space used in Stock: "), column++, 2);
-		gridPane.add(new Label(" Threshold: "), column++, 2);
-		gridPane.add(new Label(" Recommendation: "), column++, 2);
+		gridPane.add(new Label("Items:  "), column++, 2);
+		gridPane.add(new Label("Size:   "), column++, 2);
+		gridPane.add(new Label("Delivery time:  "), column++, 2);
+		gridPane.add(new Label("Units in Stock: "), column++, 2);
+		gridPane.add(new Label("Threshold:  "), column++, 2);
+		gridPane.add(new Label("Recommendation: "), column++, 2);
 
 		LogicHandler.getInstance().displayItemData(gridPane, xPos, yPos);
 		return gridPane;

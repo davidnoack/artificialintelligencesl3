@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Stock {
-
 	private int maxSize;
 	private HashMap <Item, Integer> inventory = new HashMap <>();
 
@@ -16,8 +15,8 @@ public class Stock {
 		return inventory;
 	}
 
-	public void buyForInventory(Item item, int amount) {
-		int neededSpace = amount * item.getSize();
+	public void putToInventory(Item item) {
+		int neededSpace = item.getSize();
 		if (isEnoughSpaceFor(neededSpace)) {
 			if (inventory.containsKey(item)) {
 				neededSpace += inventory.get(item);
@@ -50,5 +49,9 @@ public class Stock {
 			sumUsedSpace += usedSpace;
 		}
 		return (maxSize - sumUsedSpace);
+	}
+
+	public void recalculateThreshold() {
+
 	}
 }
