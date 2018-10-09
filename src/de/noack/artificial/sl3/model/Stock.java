@@ -22,6 +22,9 @@ public class Stock {
 				neededSpace += inventory.get(item);
 			}
 			inventory.put(item, neededSpace);
+			item.getOrderRule().decreaseStockOverflow();
+		} else {
+			item.getOrderRule().increaseStockOverflow();
 		}
 	}
 
@@ -31,9 +34,14 @@ public class Stock {
 
 	public Item retrieveSellableItem(String itemName) {
 		for (Map.Entry <Item, Integer> inventoryEntry : inventory.entrySet()) {
-			if (inventoryEntry.getKey().getName().equals(itemName) && inventoryEntry.getValue().intValue() * inventoryEntry.getKey().getSize() > 0) {
-				inventory.put(inventoryEntry.getKey(), inventoryEntry.getValue() - inventoryEntry.getKey().getSize());
-				return inventoryEntry.getKey();
+			if (inventoryEntry.getKey().getName().equals(itemName)) {
+				if(inventoryEntry.getValue().intValue() * inventoryEntry.getKey().getSize() > 0) {
+					inventory.put(inventoryEntry.getKey(), inventoryEntry.getValue() - inventoryEntry.getKey().getSize());
+					inventoryEntry.getKey().getOrderRule().decreaseCustomerUnhappiness();
+					return inventoryEntry.getKey();
+				} else {
+					inventoryEntry.getKey().getOrderRule().increaseCustomerUnhappiness();
+				}
 			}
 		}
 		return null;
@@ -49,9 +57,5 @@ public class Stock {
 			sumUsedSpace += usedSpace;
 		}
 		return (maxSize - sumUsedSpace);
-	}
-
-	public void recalculateThreshold() {
-
 	}
 }

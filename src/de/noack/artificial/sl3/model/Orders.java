@@ -8,17 +8,19 @@ public class Orders {
 
 	public void nextDay() {
 		for (Map.Entry <Integer, List <Item>> order : orders.entrySet()) {
-			if (order.getKey() > 0 && orders.containsKey(order.getKey() - 1)) {
-				orders.get(order.getKey() - 1).addAll(order.getValue());
+			if(order.getKey() > 0 ) {
+				if (orders.containsKey(order.getKey() - 1)) {
+					orders.get(order.getKey() - 1).addAll(order.getValue());
+				} else {
+					orders.put(order.getKey() - 1, order.getValue());
+				}
 				orders.get(order.getKey()).removeAll(order.getValue());
 			}
 		}
 	}
 
 	public List <Item> getDelivery() {
-		if (orders.containsKey(0)) {
-			return orders.get(0);
-		}
+		if (orders.containsKey(0)) return orders.get(0);
 		return Collections.emptyList();
 	}
 

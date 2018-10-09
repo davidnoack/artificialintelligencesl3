@@ -8,6 +8,8 @@ public class Item extends DomainElement {
 	private int threshold;
 	private int size;
 
+	private OrderRule orderRule;
+
 	public Item(String name, int deliveryTime, int size) {
 		super();
 		this.name = name;
@@ -15,6 +17,7 @@ public class Item extends DomainElement {
 		this.deliveryTime = deliveryTime;
 		threshold = 0;
 		this.size = size;
+		orderRule = new OrderRule(this);
 	}
 
 	public String getName() {
@@ -43,5 +46,9 @@ public class Item extends DomainElement {
 
 	public int getSize() {
 		return size;
+	}
+
+	public OrderRule getOrderRule() {
+		return orderRule;
 	}
 }
