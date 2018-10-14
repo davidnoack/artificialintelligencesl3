@@ -3,7 +3,6 @@ package de.noack.artificial.sl3.logic;
 import de.noack.artificial.sl3.gui.Main;
 import de.noack.artificial.sl3.model.Item;
 import de.noack.artificial.sl3.model.Market;
-import de.noack.artificial.sl3.model.Orders;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -30,8 +29,9 @@ public class LogicHandler {
 	}
 
 	public void addHeaderToDisplay(GridPane gridPane) {
-		gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize() + " Left: " + market.getStock().getStockLeft()),0,0);
-		gridPane.add(new Label("Orders: " + String.valueOf(day)), 1, 0);
+		gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize() + " Left: " + market.getStock().getStockLeft()), 0, 0);
+		gridPane.add(new Label("Day: " + String.valueOf(day)), 1, 0);
+		gridPane.add(new Label("Fitness: " + calculateFitness()), 2, 0);
 	}
 
 	public void displayItemData(GridPane gridPane, int xPos, int yPos) {
@@ -70,13 +70,30 @@ public class LogicHandler {
 			market.getRandomCashpoint().sellItem(stockEntry.getKey().getName());
 		}
 		day++;
+		buyIfRecommended();
 		market.getOrders().nextDay();
-		Main.initMainWindow();
+		market.refresh();
 	}
 
 	public void buyForInventory(Item item) {
 		market.getOrders().order(item);
 		market.refresh();
-		Main.initMainWindow();
+	}
+
+	public void buyIfRecommended() {
+		for (Item item : market.getStock().getInventory().keySet()) {
+			if ("Buy for Inventory!".equals(item.getRecommendation())) {
+				buyForInventory(item);
+			}
+		}
+	}
+
+	public double calculateFitness() {
+		double result = 1;
+		for (Item item : market.getStock().getInventory().keySet()) {
+			result += item.getOrderRule().getCustomerUnhappiness();
+			result += item.getOrderRule().getStockOverflow();
+		}
+		return 1 / result;
 	}
 }

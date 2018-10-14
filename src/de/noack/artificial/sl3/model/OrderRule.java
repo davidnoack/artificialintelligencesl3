@@ -10,14 +10,14 @@ public class OrderRule {
 
 	// Fitness:
 	private double oldFitness;
-	private double newFitness;
+
+	private int oldThreshold;
 
 	public OrderRule(Item parentItem) {
 		this.parentItem = parentItem;
 		customerUnhappiness = 0;
 		stockOverflow = 0;
 		oldFitness = 0;
-		newFitness = 0;
 	}
 
 	public int getCustomerUnhappiness() {
@@ -49,15 +49,34 @@ public class OrderRule {
 	}
 
 	private void recalculateThreshold() {
-		// Lower Threshold, if stock is full
 		int threshold = parentItem.getThreshold();
-		if (stockOverflow > 0 && threshold > 0) {
-			parentItem.setThreshold(threshold--);
+		double customerUnhappinessFactor = customerUnhappiness;
+		double stockOverflowFactor = stockOverflow;
+
+		if(calculateFitness() < oldFitness) {
+			parentItem.setThreshold(oldThreshold);
+			oldFitness = calculateFitness();
 		}
-		// Increase Threshold, if customers are unhappy and there is less overflow
-		if (customerUnhappiness > 0 && customerUnhappiness > stockOverflow) {
-			// For each unhappy customer threshold is raised by delivery day count
-			parentItem.setThreshold(threshold + customerUnhappiness * parentItem.getDeliveryTime());
+
+		// To avoid division with 0
+		if (customerUnhappinessFactor == 0) {
+			customerUnhappinessFactor = Double.MIN_VALUE;
 		}
+		if (stockOverflowFactor == 0) {
+			stockOverflowFactor = Double.MIN_VALUE;
+		}
+		double ratio = customerUnhappinessFactor / stockOverflowFactor;
+
+		if (ratio > 1) {
+			threshold++;
+		} else if (ratio < 1 && threshold > 0) {
+			threshold--;
+		}
+		oldThreshold = threshold;
+		parentItem.setThreshold(threshold);
+	}
+
+	private double calculateFitness() {
+		return (customerUnhappiness + stockOverflow) == 0 ? 0 : 1 / (customerUnhappiness + stockOverflow);
 	}
 }
