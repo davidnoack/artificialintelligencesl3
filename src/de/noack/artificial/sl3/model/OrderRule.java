@@ -53,9 +53,10 @@ public class OrderRule {
 		double customerUnhappinessFactor = customerUnhappiness;
 		double stockOverflowFactor = stockOverflow;
 
-		if(calculateFitness() < oldFitness) {
+		if(calculateFitness() > oldFitness) {
 			parentItem.setThreshold(oldThreshold);
 			oldFitness = calculateFitness();
+			return;
 		}
 
 		// To avoid division with 0

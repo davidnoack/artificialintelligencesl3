@@ -12,7 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class EvolutionaryStockSimulation extends Application {
 
 	static int xPos = 0;
 	static int yPos = 3;

@@ -1,6 +1,6 @@
 package de.noack.artificial.sl3.model;
 
-public class Cashpoint extends DomainElement {
+public class Cashpoint {
 
 	private Market parent;
 

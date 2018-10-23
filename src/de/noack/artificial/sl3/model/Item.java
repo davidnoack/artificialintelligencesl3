@@ -1,6 +1,6 @@
 package de.noack.artificial.sl3.model;
 
-public class Item extends DomainElement {
+public class Item {
 
 	private String name;
 	private String recommendation;

@@ -1,33 +1,26 @@
 package de.noack.artificial.sl3.model;
 
-import de.noack.artificial.sl3.gui.Main;
+import de.noack.artificial.sl3.gui.EvolutionaryStockSimulation;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-public class Market extends DomainElement {
+public class Market {
 
 	private Stock stock;
 	private Orders orders = new Orders();
 
-	private HashSet <Cashpoint> cashpoints = new HashSet <>();
+	private List <Cashpoint> cashpoints = new ArrayList <>();
 
 	public Market(int maxStockSize) {
 		super();
-		createStock(maxStockSize);
+		stock = new Stock(maxStockSize);
 	}
 
 	public void createCashpoint() {
 		cashpoints.add(new Cashpoint(this));
-	}
-
-	public void createStock(int maxSize) {
-		stock = new Stock(maxSize);
-	}
-
-	public Stock getStock() {
-		return stock;
 	}
 
 	public void refresh() {
@@ -41,17 +34,23 @@ public class Market extends DomainElement {
 				item.setRecommendation("");
 			}
 		}
-		for(Item item : orders.getDelivery()) {
+		for (Item item : orders.getDelivery()) {
 			stock.putToInventory(item);
 		}
-		Main.initMainWindow();
+		EvolutionaryStockSimulation.initMainWindow();
 	}
 
+	/**
+	 * Gibt eine zufällige der verfügbaren Kassen zurück
+	 *
+	 * @return Kasse
+	 */
 	public Cashpoint getRandomCashpoint() {
-		for (Cashpoint cashpoint : cashpoints) {
-			return cashpoint;
-		}
-		return null;
+		return cashpoints.get((new Random()).nextInt(cashpoints.size()));
+	}
+
+	public Stock getStock() {
+		return stock;
 	}
 
 	public Orders getOrders() {

@@ -1,6 +1,6 @@
 package de.noack.artificial.sl3.logic;
 
-import de.noack.artificial.sl3.gui.Main;
+import de.noack.artificial.sl3.gui.EvolutionaryStockSimulation;
 import de.noack.artificial.sl3.model.Item;
 import de.noack.artificial.sl3.model.Market;
 import javafx.scene.control.Button;
@@ -50,19 +50,14 @@ public class LogicHandler {
 			gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getThreshold())), xPos++, yPos);
 			gridPane.add(new Label(inventoryEntry.getKey().getRecommendation()), xPos++, yPos);
 			Button sellItem = new Button("Sell Item!");
-			sellItem.setOnAction(e -> sellItem(inventoryEntry.getKey()));
+			sellItem.setOnAction(e -> sellItemAndRefreshDisplay(inventoryEntry.getKey().getName()));
 			gridPane.add(sellItem, xPos++, yPos);
 			Button buyItem = new Button("Buy for Inventory!");
-			buyItem.setOnAction(e -> buyForInventory(inventoryEntry.getKey()));
+			buyItem.setOnAction(e -> market.getOrders().order(inventoryEntry.getKey()));
 			gridPane.add(buyItem, xPos, yPos++);
 
 			xPos = 0;
 		}
-	}
-
-	public void sellItem(Item item) {
-		market.getRandomCashpoint().sellItem(item.getName());
-		Main.initMainWindow();
 	}
 
 	public void sellEachItemOnce() {
@@ -72,20 +67,43 @@ public class LogicHandler {
 		day++;
 		buyIfRecommended();
 		market.getOrders().nextDay();
-		market.refresh();
-	}
-
-	public void buyForInventory(Item item) {
-		market.getOrders().order(item);
-		market.refresh();
 	}
 
 	public void buyIfRecommended() {
 		for (Item item : market.getStock().getInventory().keySet()) {
 			if ("Buy for Inventory!".equals(item.getRecommendation())) {
-				buyForInventory(item);
+				buyForInventoryAndRefreshDisplay(item);
 			}
 		}
+	}
+
+	/**
+	 * Ruft die Methode zum Kauf einer Ware auf und aktualisiert die Anzeige
+	 *
+	 * @param itemToBuy
+	 */
+	private void buyForInventoryAndRefreshDisplay(Item itemToBuy) {
+		market.getStock().putToInventory(itemToBuy);
+		refreshDisplay();
+	}
+
+	/**
+	 * Ruft die Methode zum Verkauf einer Ware auf und aktualisiert die Anzeige
+	 *
+	 * @param itemName
+	 */
+	private void sellItemAndRefreshDisplay(String itemName) {
+		market.getRandomCashpoint().sellItem(itemName);
+		refreshDisplay();
+	}
+
+	/**
+	 * Hier wird die Nachfrage neu berechnet, die Empfehlungen angepasst und
+	 * das Hauptfenster neu gerendert.
+	 */
+	private void refreshDisplay() {
+		market.refresh();
+		EvolutionaryStockSimulation.initMainWindow();
 	}
 
 	public double calculateFitness() {
