@@ -1,83 +1,68 @@
 package de.noack.artificial.sl3.model;
 
+import java.util.Random;
+
 public class OrderRule {
 
-	private Item parentItem;
+    private Item parentItem;
 
-	// Codierung:
-	private int customerUnhappiness;
-	private int stockOverflow;
+    // Codierung:
+    private double customerUnhappiness;
+    private double stockOverflow;
 
-	// Fitness:
-	private double oldFitness;
+    private int oldThreshold;
 
-	private int oldThreshold;
+    public OrderRule(Item parentItem) {
+        this.parentItem = parentItem;
+        customerUnhappiness = 0;
+        stockOverflow = 0;
+        oldThreshold = 0;
+    }
 
-	public OrderRule(Item parentItem) {
-		this.parentItem = parentItem;
-		customerUnhappiness = 0;
-		stockOverflow = 0;
-		oldFitness = 0;
-	}
+    public void increaseCustomerUnhappiness() {
+        customerUnhappiness++;
+    }
 
-	public int getCustomerUnhappiness() {
-		return customerUnhappiness;
-	}
+    public void decreaseCustomerUnhappiness() {
+        if (customerUnhappiness > 0) customerUnhappiness--;
+    }
 
-	public void increaseCustomerUnhappiness() {
-		customerUnhappiness++;
-		recalculateThreshold();
-	}
+    public void increaseStockOverflow() {
+        stockOverflow++;
+    }
 
-	public void decreaseCustomerUnhappiness() {
-		if (customerUnhappiness > 0) customerUnhappiness--;
-		recalculateThreshold();
-	}
+    public void decreaseStockOverflow() {
+        if (stockOverflow > 0) stockOverflow--;
+    }
 
-	public int getStockOverflow() {
-		return stockOverflow;
-	}
+    public void saveThreshold() {
+        oldThreshold = parentItem.getThreshold();
+    }
 
-	public void increaseStockOverflow() {
-		stockOverflow++;
-		recalculateThreshold();
-	}
+    public void resetThreshold() {
+        parentItem.setThreshold(oldThreshold);
+    }
 
-	public void decreaseStockOverflow() {
-		if (stockOverflow > 0) stockOverflow--;
-		recalculateThreshold();
-	}
+    public void mutateThreshold() {
+        if(new Random().nextDouble() < 0.01) {
+            oldThreshold++;
+            parentItem.setThreshold(oldThreshold);
+        } else if(new Random().nextDouble() < 0.01 && oldThreshold > 0) {
+            oldThreshold--;
+            parentItem.setThreshold(oldThreshold);
+        }
+    }
 
-	private void recalculateThreshold() {
-		int threshold = parentItem.getThreshold();
-		double customerUnhappinessFactor = customerUnhappiness;
-		double stockOverflowFactor = stockOverflow;
+    public double calculateFitness() {
+        if(customerUnhappiness == 0 && stockOverflow == 0) return 1;
+        return 1 / (customerUnhappiness + stockOverflow);
+    }
 
-		if(calculateFitness() > oldFitness) {
-			parentItem.setThreshold(oldThreshold);
-			oldFitness = calculateFitness();
-			return;
-		}
+    public double getCustomerUnhappiness() {
+        return customerUnhappiness;
+    }
 
-		// To avoid division with 0
-		if (customerUnhappinessFactor == 0) {
-			customerUnhappinessFactor = Double.MIN_VALUE;
-		}
-		if (stockOverflowFactor == 0) {
-			stockOverflowFactor = Double.MIN_VALUE;
-		}
-		double ratio = customerUnhappinessFactor / stockOverflowFactor;
-
-		if (ratio > 1) {
-			threshold++;
-		} else if (ratio < 1 && threshold > 0) {
-			threshold--;
-		}
-		oldThreshold = threshold;
-		parentItem.setThreshold(threshold);
-	}
-
-	private double calculateFitness() {
-		return (customerUnhappiness + stockOverflow) == 0 ? 0 : 1 / (customerUnhappiness + stockOverflow);
-	}
+    public double getStockOverflow() {
+        return stockOverflow;
+    }
 }

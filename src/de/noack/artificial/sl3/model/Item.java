@@ -2,6 +2,7 @@ package de.noack.artificial.sl3.model;
 
 public class Item {
 
+	private Stock parentStock;
 	private String name;
 	private String recommendation;
 	private int deliveryTime;
@@ -10,7 +11,7 @@ public class Item {
 
 	private OrderRule orderRule;
 
-	public Item(String name, int deliveryTime, int size) {
+	public Item(String name, int deliveryTime, int size, Stock parentStock) {
 		super();
 		this.name = name;
 		recommendation = "";
@@ -18,6 +19,7 @@ public class Item {
 		threshold = 0;
 		this.size = size;
 		orderRule = new OrderRule(this);
+        this.parentStock = parentStock;
 	}
 
 	public String getName() {
@@ -50,5 +52,9 @@ public class Item {
 
 	public OrderRule getOrderRule() {
 		return orderRule;
+	}
+
+	public Stock getParentStock() {
+		return parentStock;
 	}
 }

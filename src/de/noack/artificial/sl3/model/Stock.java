@@ -49,7 +49,7 @@ public class Stock {
 	 * @param spaceNeeded
 	 * @return genug Platz vorhanden?
 	 */
-	private boolean isEnoughSpaceFor(int spaceNeeded) {
+	public boolean isEnoughSpaceFor(int spaceNeeded) {
 		return spaceNeeded < getStockLeft();
 	}
 

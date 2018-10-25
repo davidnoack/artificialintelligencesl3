@@ -11,10 +11,5 @@ public class Cashpoint {
 
 	public void sellItem(String itemName) {
 		parent.getStock().retrieveSellableItem(itemName);
-		getParent().refresh();
-	}
-
-	public Market getParent() {
-		return parent;
 	}
 }
