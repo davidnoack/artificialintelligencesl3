@@ -8,7 +8,8 @@ import java.util.Random;
  * die Lagerüberfüllung (stockOverflow). Beide Werte sollen möglichst niedrig gehalten werden. Sie
  * besitzen "increase" und "decrease" Methdoden, da diese Werte immer lediglich um 1 in- bzw. de-
  * krementiert werden sollen. Zusätzlich wird der alte Grenzwert der Ware vorgemerkt werden, falls
- * die Fitness sinkt. Alle Zahlenwerte werden mit 0 initialsiert.
+ * die Fitness sinkt. Der Grenzwert wird mit 0 initialisiert, die Negativwerte mit 100, damit der Algo-
+ * rithmus sich aus dem "Kredit" arbeiten muss.
  */
 public class OrderRule {
 
@@ -22,8 +23,8 @@ public class OrderRule {
 
 	public OrderRule(Item parentItem) {
 		this.parentItem = parentItem;
-		customerUnhappiness = 0;
-		stockOverflow = 0;
+		customerUnhappiness = 100;
+		stockOverflow = 100;
 		oldThreshold = 0;
 	}
 
@@ -60,22 +61,36 @@ public class OrderRule {
 	}
 
 	/**
-	 * Mutiert den Grenzwert, indem dieser mit einer Wahrscheinlichkeit von je 1% um 1 hochgezählt oder
-	 * gemindert wird.
+	 * Mutiert den Grenzwert, indem dieser mit einer bestimmten Wahrscheinlichkeit um bis zu
+	 * 4 Punkten erhöht oder gemindert wird.
+	 * Mit einer Wahrscheinlichkeit von 1% wird der Wert sogar auf 0 zurückgesetzt.
 	 */
 	public void mutateThreshold() {
-		if (new Random().nextDouble() < 0.01) {
-			oldThreshold++;
-			parentItem.setThreshold(oldThreshold);
-		} else if (new Random().nextDouble() < 0.01 && oldThreshold > 0) {
-			oldThreshold--;
+		if (new Random().nextDouble() < 0.1) {
+			parentItem.setThreshold(oldThreshold + 1);
+		} else if (new Random().nextDouble() < 0.1 && oldThreshold >= 1) {
+			parentItem.setThreshold(oldThreshold - 1);
+		} else if (new Random().nextDouble() < 0.05) {
+			parentItem.setThreshold(oldThreshold + 2);
+		} else if (new Random().nextDouble() < 0.05 && oldThreshold >= 2) {
+			parentItem.setThreshold(oldThreshold - 2);
+		} else if (new Random().nextDouble() < 0.025) {
+			parentItem.setThreshold(oldThreshold + 3);
+		} else if (new Random().nextDouble() < 0.025 && oldThreshold >= 3) {
+			parentItem.setThreshold(oldThreshold - 3);
+		} else if (new Random().nextDouble() < 0.0125) {
+			parentItem.setThreshold(oldThreshold + 4);
+		} else if (new Random().nextDouble() < 0.0125 && oldThreshold >= 4) {
+			parentItem.setThreshold(oldThreshold - 4);
+		} else if (new Random().nextDouble() < 0.01) {
+			oldThreshold = 0;
 			parentItem.setThreshold(oldThreshold);
 		}
 	}
 
 	/**
-	 * Die Fitness soll möglichst hoch sein, wenn Kundenunzufriedenheit und Lagerüberfüllung 0 sind
-	 * Ansonsten wird der Fitnesswert durch Erhöhung einer oder beider Werte gemindert.
+	 * Die Fitness soll möglichst hoch sein, wenn Kundenunzufriedenheit und Lagerüberfüllung 0
+	 * sind Ansonsten wird der Fitnesswert durch Erhöhung einer oder beider Werte gemindert.
 	 *
 	 * @return Individueller Fitnesswert einer Ware
 	 */

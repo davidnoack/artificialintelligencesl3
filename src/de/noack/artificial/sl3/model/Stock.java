@@ -31,7 +31,6 @@ public class Stock {
 	 * @param item
 	 */
 	public void putToInventory(Item item) {
-		System.out.println("Try to put item: " + item.getName() + " to inventory.");
 		if (isEnoughSpaceFor(item.getSize())) {
 			inventory.put(item, inventory.get(item) + item.getSize());
 			item.getOrderRule().decreaseStockOverflow();

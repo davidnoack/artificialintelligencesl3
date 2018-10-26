@@ -14,9 +14,8 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 /**
- * Der LogicHandler kapselt alle Zugriffe von außen auf das Modell. Er initialisiert den
- * Markt und damit den Kontext der Anwendung. Er gibt alle Daten des Modells auf der
- * Oberfläche aus und steuert die Zugriffe welche über die Oberfläche getätigt werden.
+ * Der LogicHandler kapselt alle Zugriffe von außen auf das Modell. Er initialisiert den Markt und damit den Kontext der Anwendung. Er gibt alle Daten
+ * des Modells auf der Oberfläche aus und steuert die Zugriffe welche über die Oberfläche getätigt werden.
  */
 public class LogicHandler {
 
@@ -27,14 +26,16 @@ public class LogicHandler {
 
 	// Maximale erreichte Fitness
 	double maximumFitness = 0;
+	// Aktuell erreichte Fitness
+	double currentFitness = 0;
 
 	// Service zur Planung von Tasks
 	ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	// Diese Liste enthält Referenzen auf zukünftig durchzuführende Iterationen.
 	List <ScheduledFuture> taskList = new ArrayList <>();
 
-	// Liste aller "perfekten" Thresholds
-	List <String> perfect = new ArrayList <>();
+	// Anzeige der aktuell besten Thresholds
+	String perfect = "";
 
 	private static LogicHandler ourInstance = new LogicHandler();
 
@@ -43,8 +44,7 @@ public class LogicHandler {
 	}
 
 	/**
-	 * Initialisiert den Markt mit der über die Oberfläche übermittelten Lagergröße und
-	 * erstellt eine Kasse
+	 * Initialisiert den Markt mit der über die Oberfläche übermittelten Lagergröße und erstellt eine Kasse
 	 *
 	 * @param stockSize
 	 */
@@ -65,8 +65,7 @@ public class LogicHandler {
 	}
 
 	/**
-	 * Fügt Lagergröße, aktuelle Lagerfüllung, Tag bzw. Iteration und die bisher maximal erreichte
-	 * Fitness an.
+	 * Fügt Lagergröße, aktuelle Lagerfüllung, Tag bzw. Iteration und die bisher maximal erreichte Fitness an.
 	 *
 	 * @param gridPane
 	 */
@@ -74,13 +73,13 @@ public class LogicHandler {
 		gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize() + " Left: " +
 				market.getStock().getStockLeft()), 0, 0);
 		gridPane.add(new Label("Day: " + String.valueOf(day)), 1, 0);
-		gridPane.add(new Label("Fitness: " + maximumFitness), 2, 0);
+		gridPane.add(new Label("Best Fitness: " + maximumFitness), 2, 0);
+		gridPane.add(new Label("Current Fitness: " + currentFitness), 3, 0);
 	}
 
 	/**
-	 * Erstellt jeweils einen Button zum Starten und einen zum Stoppen der Simulation. Des weiteren
-	 * werden die Daten der Waren ausgegeben und überprüft, ob ein perfektes Ergebnis vorliegt. Dieses
-	 * wird, sofern vorhanden, auch ausgegeben.
+	 * Erstellt jeweils einen Button zum Starten und einen zum Stoppen der Simulation. Des weiteren werden die Daten der Waren ausgegeben und
+	 * überprüft, ob ein "perfektes" Ergebnis vorliegt. Dieses wird, sofern vorhanden, auch ausgegeben.
 	 *
 	 * @param gridPane
 	 * @param xPos
@@ -110,27 +109,22 @@ public class LogicHandler {
 
 			xPos = 0;
 		}
-		for(String perfectResult : perfect) {
-			gridPane.add(new Label(perfectResult), 0, yPos++);
-		}
+		gridPane.add(new Label(perfect), 0, yPos, 11, 1);
 	}
 
 	private void simulate() {
 		executorService = new ScheduledThreadPoolExecutor(8);
 		taskList.add(executorService.scheduleAtFixedRate(() -> {
 			buyIfRecommended();
-			System.out.println("Sell each item once: ");
 			for (Map.Entry <Item, Integer> stockEntry : market.getStock().getInventory().entrySet())
 				market.getRandomCashpoint().sellItem(stockEntry.getKey());
 			day++;
 			market.getOrders().storeDelivery();
-			if (day > 7) {
-				calculateFitnessAndThreshold();
-			}
+			calculateFitnessAndThreshold();
 			market.getOrders().nextDay();
 			market.refreshRecommendations();
 			Platform.runLater(EvolutionaryStockSimulation::initMainWindow);
-		}, 1, 100, TimeUnit.MILLISECONDS));
+		}, 1, 10, TimeUnit.MILLISECONDS));
 	}
 
 	private void stopSimulation() {
@@ -144,7 +138,7 @@ public class LogicHandler {
 	}
 
 	private double calculateFitnessAndThreshold() {
-		double cumulatedFitness = 0;
+		currentFitness = 0;
 
 		// Gesamte Fitness errechnen und "schlechteste" Ware finden.
 		Item worstItem = null;
@@ -153,12 +147,18 @@ public class LogicHandler {
 			if (worstItem == null || worstItem.getOrderRule().calculateFitness() > item.getOrderRule().calculateFitness()) {
 				worstItem = item;
 			}
-			cumulatedFitness += itemFitness;
+			currentFitness += itemFitness;
 		}
-		cumulatedFitness = cumulatedFitness / market.getStock().getInventory().size();
-		if (cumulatedFitness < maximumFitness) market.getStock().getInventory().keySet().forEach(item -> item.getOrderRule().resetThreshold());
+		currentFitness = currentFitness / market.getStock().getInventory().size();
+		if (currentFitness < maximumFitness) market.getStock().getInventory().keySet().forEach(item -> item.getOrderRule().resetThreshold());
 		else {
-			maximumFitness = cumulatedFitness;
+			maximumFitness = currentFitness;
+			StringBuilder builder = new StringBuilder();
+			builder.append("Current best Fitness achieved with: ");
+			for (Item item : market.getStock().getInventory().keySet()) {
+				builder.append(" Item \"" + item.getName() + "\" Threshold: " + item.getThreshold());
+			}
+			perfect = builder.toString();
 			for (Item item : market.getStock().getInventory().keySet()) item.getOrderRule().saveThreshold();
 		}
 		for (Item item : market.getStock().getInventory().keySet()) {
@@ -168,16 +168,8 @@ public class LogicHandler {
 			}
 			item.getOrderRule().mutateThreshold();
 		}
-		if (cumulatedFitness == 1.0) {
-			StringBuilder builder = new StringBuilder();
-			builder.append("Perfect Fitness achieved: ");
-			for (Item item : market.getStock().getInventory().keySet()) {
-				builder.append(" Item \"" + item.getName() + "\" Threshold: " + item.getThreshold());
-			}
-			perfect.add(builder.toString());
-		}
 
-		return cumulatedFitness;
+		return currentFitness;
 	}
 
 	private void enhanceWorstItem(Item item) {

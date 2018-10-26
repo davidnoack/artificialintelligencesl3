@@ -93,7 +93,7 @@ public class EvolutionaryStockSimulation extends Application {
      * Initialisieren des Hauptfensters
      */
     public static void initMainWindow() {
-        Scene mainScene = new Scene(loadMainWindow(), 1024, 320);
+        Scene mainScene = new Scene(loadMainWindow(), 1600, 320);
         window.setScene(mainScene);
     }
 
