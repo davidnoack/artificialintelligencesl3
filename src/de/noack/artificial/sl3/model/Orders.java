@@ -1,6 +1,7 @@
 package de.noack.artificial.sl3.model;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -9,9 +10,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Orders {
 
-	// Map mit den verbleibenden Tagen als Key und den Items, welche dann kommen
-	// als Value
-	private Map <Integer, List <Item>> orders = new ConcurrentHashMap <>();
+	// Map mit den verbleibenden Tagen als Key und den Items, welche dann kommen als Value
+	// Concurrent, da ggf. parallele Lese- und Schreibzugriffe.
+	private Map<Integer, List<Item>> orders = new ConcurrentHashMap <>();
 
 	/**
 	 * Lässt alle Warenlisten einen Tag "näher rutschen"
@@ -27,9 +28,8 @@ public class Orders {
 	}
 
 	/**
-	 * Gibt alle Items zurück welche 0 verbleibende Liefertage haben
-	 *
-	 * @return Liste von Items
+	 * Gibt alle Items zurück welche 0 verbleibende Liefertage haben und entfernt, falls diese
+	 * "einlagerbar" sind, aus der Liste.
 	 */
 	public void storeDelivery() {
 		if (orders.containsKey(0)) for (Item item : orders.get(0))
@@ -40,7 +40,7 @@ public class Orders {
 	}
 
 	/**
-	 * Bestellt eine Ware, indem sie mit ihrer jeweiligen Lieferzeit in die Map gepackt wird
+	 * Bestellt eine Ware, indem sie mit ihrer jeweiligen Lieferzeit in die Map gepackt wird.
 	 *
 	 * @param itemToOrder
 	 */

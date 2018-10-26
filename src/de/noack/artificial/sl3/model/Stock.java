@@ -13,6 +13,7 @@ public class Stock {
 	private int maxSize;
 
 	// Inventar der Waren mit Anzahl der lagernden
+	// Concurrent, da parallele Lese- und Schreibzugriffe
 	private Map <Item, Integer> inventory = new ConcurrentHashMap <>();
 
 	public Stock(int maxSize) {
@@ -24,7 +25,8 @@ public class Stock {
 	}
 
 	/**
-	 * Wenn genug Platz im Inventar ist, wird der Bestand um eine Ware erweitert Zusätzlich wird der OrderRule mitgeteilt, ob das Lager voll ist
+	 * Wenn genug Platz im Inventar ist, wird der Bestand um eine Ware erweitert. Zusätzlich wird eine etwaige
+	 * Lagerüberfüllung mittels Erhöhung des Wertes in der OrderRule angemahnt.
 	 *
 	 * @param item
 	 */
@@ -48,15 +50,19 @@ public class Stock {
 		return spaceNeeded <= getStockLeft();
 	}
 
+	/**
+	 * Iteriert über das Inventar und versucht die zu verkaufende Ware zu finden. Ist diese gefunden,
+	 * wird geprüft, ob noch etwas auf Lager ist und dann zurückgegeben. Ist die Ware nicht auf Lager,
+	 * wird die Kundenunzufriedenheit in der OrderRule der Ware erhöht.
+	 *
+	 * @param item
+	 * @return verkaufte Ware
+	 */
 	public Item retrieveSellableItem(Item item) {
-		System.out.println("Try to retrieve sellable Item: " + item.getName());
 		for (Map.Entry <Item, Integer> inventoryEntry : inventory.entrySet())
 			if (inventoryEntry.getKey().equals(item)) {
-				System.out.println("Item found!");
 				if (inventoryEntry.getValue() > 0) {
-					System.out.println("Item available!");
 					inventory.put(inventoryEntry.getKey(), inventoryEntry.getValue() - inventoryEntry.getKey().getSize());
-					System.out.println("Put key: " + inventoryEntry.getKey().getName() + " Value: " + inventory.get(inventoryEntry.getKey()));
 					inventoryEntry.getKey().getOrderRule().decreaseCustomerUnhappiness();
 					return inventoryEntry.getKey();
 				} else {

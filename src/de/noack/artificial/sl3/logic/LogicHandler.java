@@ -13,12 +13,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+/**
+ * Der LogicHandler kapselt alle Zugriffe von außen auf das Modell. Er initialisiert den
+ * Markt und damit den Kontext der Anwendung. Er gibt alle Daten des Modells auf der
+ * Oberfläche aus und steuert die Zugriffe welche über die Oberfläche getätigt werden.
+ */
 public class LogicHandler {
 
 	private Market market;
-	int day = 0;
+
+	// Tag bzw. Iterationsnummer
+	private int day = 0;
+
+	// Maximale erreichte Fitness
 	double maximumFitness = 0;
 
+	// Service zur Planung von Tasks
 	ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	// Diese Liste enthält Referenzen auf zukünftig durchzuführende Iterationen.
 	List <ScheduledFuture> taskList = new ArrayList <>();
@@ -32,24 +42,51 @@ public class LogicHandler {
 		return ourInstance;
 	}
 
+	/**
+	 * Initialisiert den Markt mit der über die Oberfläche übermittelten Lagergröße und
+	 * erstellt eine Kasse
+	 *
+	 * @param stockSize
+	 */
 	public void initializeMarket(Integer stockSize) {
 		market = new Market(stockSize);
+		market.createCashpoint();
 	}
 
+	/**
+	 * Initialisiert die Items, welche in der Aufgabenstellung vorgegeben worden sind.
+	 *
+	 * @param name
+	 * @param size
+	 * @param deliveryTime
+	 */
 	public void addItem(String name, Integer size, Integer deliveryTime) {
 		market.getStock().getInventory().put(new Item(name, deliveryTime, size, market.getStock()), 0);
 	}
 
+	/**
+	 * Fügt Lagergröße, aktuelle Lagerfüllung, Tag bzw. Iteration und die bisher maximal erreichte
+	 * Fitness an.
+	 *
+	 * @param gridPane
+	 */
 	public void addHeaderToDisplay(GridPane gridPane) {
-		gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize() + " Left: " + market.getStock().getStockLeft()), 0, 0);
+		gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize() + " Left: " +
+				market.getStock().getStockLeft()), 0, 0);
 		gridPane.add(new Label("Day: " + String.valueOf(day)), 1, 0);
 		gridPane.add(new Label("Fitness: " + maximumFitness), 2, 0);
 	}
 
+	/**
+	 * Erstellt jeweils einen Button zum Starten und einen zum Stoppen der Simulation. Des weiteren
+	 * werden die Daten der Waren ausgegeben und überprüft, ob ein perfektes Ergebnis vorliegt. Dieses
+	 * wird, sofern vorhanden, auch ausgegeben.
+	 *
+	 * @param gridPane
+	 * @param xPos
+	 * @param yPos
+	 */
 	public void displayItemData(GridPane gridPane, int xPos, int yPos) {
-
-		market.createCashpoint();
-
 		Button sellEachItem = new Button("Simulate selling an item each day!");
 		sellEachItem.setOnAction(e -> simulate());
 		gridPane.add(sellEachItem, 0, 1);

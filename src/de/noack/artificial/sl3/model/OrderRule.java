@@ -2,6 +2,14 @@ package de.noack.artificial.sl3.model;
 
 import java.util.Random;
 
+/**
+ * Die Klasse "OrderRule" dient zur Ermittlung von Bestellregeln. Diese werden für die dazugehörige
+ * Ware (parentItem) ermittelt. Benötigt wird die Kundenunzufriedenheit (customerUnhappiness), sowie
+ * die Lagerüberfüllung (stockOverflow). Beide Werte sollen möglichst niedrig gehalten werden. Sie
+ * besitzen "increase" und "decrease" Methdoden, da diese Werte immer lediglich um 1 in- bzw. de-
+ * krementiert werden sollen. Zusätzlich wird der alte Grenzwert der Ware vorgemerkt werden, falls
+ * die Fitness sinkt. Alle Zahlenwerte werden mit 0 initialsiert.
+ */
 public class OrderRule {
 
 	private Item parentItem;
@@ -35,15 +43,26 @@ public class OrderRule {
 		if (stockOverflow > 0) stockOverflow--;
 	}
 
+	/**
+	 * Speichert den alten Grenzwert, sofern dieser im Kontext der Lagerung überhaupt realistisch ist.
+	 */
 	public void saveThreshold() {
-		if (parentItem.getThreshold() <= Double.valueOf(parentItem.getParentStock().getMaxSize()) / Double.valueOf(parentItem.getSize()))
+		if (parentItem.getThreshold() <= Double.valueOf(parentItem.getParentStock().getMaxSize()) /
+				Double.valueOf(parentItem.getSize()))
 			oldThreshold = parentItem.getThreshold();
 	}
 
+	/**
+	 * Setzt den Grenzwert der Ware mangels Fitness zurück
+	 */
 	public void resetThreshold() {
 		parentItem.setThreshold(oldThreshold);
 	}
 
+	/**
+	 * Mutiert den Grenzwert, indem dieser mit einer Wahrscheinlichkeit von je 1% um 1 hochgezählt oder
+	 * gemindert wird.
+	 */
 	public void mutateThreshold() {
 		if (new Random().nextDouble() < 0.01) {
 			oldThreshold++;
@@ -54,6 +73,12 @@ public class OrderRule {
 		}
 	}
 
+	/**
+	 * Die Fitness soll möglichst hoch sein, wenn Kundenunzufriedenheit und Lagerüberfüllung 0 sind
+	 * Ansonsten wird der Fitnesswert durch Erhöhung einer oder beider Werte gemindert.
+	 *
+	 * @return Individueller Fitnesswert einer Ware
+	 */
 	public double calculateFitness() {
 		if (customerUnhappiness == 0 && stockOverflow == 0) return 1;
 		return 1 / (customerUnhappiness + stockOverflow);
