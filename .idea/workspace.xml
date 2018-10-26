@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bfb12a50-d172-4e2b-820f-b8ebd8ae5313" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/artificialintelligencesl3/de/noack/artificial/sl3/gui/EvolutionaryStockSimulation.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/artificialintelligencesl3/de/noack/artificial/sl3/gui/EvolutionaryStockSimulation.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/artificialintelligencesl3/de/noack/artificial/sl3/logic/LogicHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/artificialintelligencesl3/de/noack/artificial/sl3/logic/LogicHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/artificialintelligencesl3/de/noack/artificial/sl3/model/OrderRule.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/artificialintelligencesl3/de/noack/artificial/sl3/model/OrderRule.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/artificialintelligencesl3/de/noack/artificial/sl3/model/Stock.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/artificialintelligencesl3/de/noack/artificial/sl3/model/Stock.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/noack/artificial/sl3/gui/EvolutionaryStockSimulation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/noack/artificial/sl3/gui/EvolutionaryStockSimulation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/de/noack/artificial/sl3/logic/LogicHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/noack/artificial/sl3/logic/LogicHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/noack/artificial/sl3/model/OrderRule.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/noack/artificial/sl3/model/OrderRule.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/de/noack/artificial/sl3/model/Stock.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/de/noack/artificial/sl3/model/Stock.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -56,12 +48,12 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="6" />
-          <entry key="java" value="16760" />
+          <entry key="java" value="18027" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="16760" />
+          <entry key="JAVA" value="18027" />
           <entry key="PLAIN_TEXT" value="6" />
         </counts>
       </usages-collector>
@@ -91,7 +83,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/de/noack/artificial/sl3/gui/EvolutionaryStockSimulation.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1394">
@@ -139,11 +131,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/de/noack/artificial/sl3/logic/LogicHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="571">
-              <caret line="122" column="43" selection-start-line="122" selection-start-column="43" selection-end-line="122" selection-end-column="43" />
+            <state relative-caret-position="119">
+              <caret line="18" column="3" selection-start-line="18" selection-start-column="3" selection-end-line="18" selection-end-column="3" />
             </state>
           </provider>
         </entry>
@@ -177,8 +169,8 @@
         <option value="$PROJECT_DIR$/src/de/noack/artificial/sl3/model/Orders.java" />
         <option value="$PROJECT_DIR$/src/de/noack/artificial/sl3/model/Stock.java" />
         <option value="$PROJECT_DIR$/src/de/noack/artificial/sl3/gui/EvolutionaryStockSimulation.java" />
-        <option value="$PROJECT_DIR$/src/de/noack/artificial/sl3/logic/LogicHandler.java" />
         <option value="$PROJECT_DIR$/src/de/noack/artificial/sl3/model/OrderRule.java" />
+        <option value="$PROJECT_DIR$/src/de/noack/artificial/sl3/logic/LogicHandler.java" />
       </list>
     </option>
   </component>
@@ -317,12 +309,12 @@
       <workItem from="1540460922367" duration="1760000" />
       <workItem from="1540537016152" duration="11195000" />
       <workItem from="1540548529241" duration="11249000" />
-      <workItem from="1540568178079" duration="723000" />
+      <workItem from="1540568178079" duration="1627000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="64498000" />
+    <option name="totallyTimeSpent" value="65402000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -489,13 +481,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/de/noack/artificial/sl3/logic/LogicHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="571">
-          <caret line="122" column="43" selection-start-line="122" selection-start-column="43" selection-end-line="122" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/de/noack/artificial/sl3/model/Item.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="686">
@@ -514,6 +499,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1394">
           <caret line="95" column="58" selection-start-line="95" selection-start-column="58" selection-end-line="95" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/de/noack/artificial/sl3/logic/LogicHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="18" column="3" selection-start-line="18" selection-start-column="3" selection-end-line="18" selection-end-column="3" />
         </state>
       </provider>
     </entry>
