@@ -9,7 +9,7 @@ public class Cashpoint {
 		this.parent = parent;
 	}
 
-	public void sellItem(String itemName) {
-		parent.getStock().retrieveSellableItem(itemName);
+	public void sellItem(Item item) {
+		parent.getStock().retrieveSellableItem(item);
 	}
 }

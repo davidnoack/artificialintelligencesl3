@@ -8,170 +8,148 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 public class LogicHandler {
 
-    private Market market;
-    int day = 0;
-    double maximumFitness = 0;
+	private Market market;
+	int day = 0;
+	double maximumFitness = 0;
 
-    private static LogicHandler ourInstance = new LogicHandler();
+	ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+	// Diese Liste enthält Referenzen auf zukünftig durchzuführende Iterationen.
+	List <ScheduledFuture> taskList = new ArrayList <>();
 
-    public static LogicHandler getInstance() {
-        return ourInstance;
-    }
+	// Liste aller "perfekten" Thresholds
+	List <String> perfect = new ArrayList <>();
 
-    public void initializeMarket(Integer stockSize) {
-        market = new Market(stockSize);
-    }
+	private static LogicHandler ourInstance = new LogicHandler();
 
-    public void addItem(String name, Integer size, Integer deliveryTime) {
-        market.getStock().getInventory().put(new Item(name, deliveryTime, size, market.getStock()), 0);
-    }
+	public static LogicHandler getInstance() {
+		return ourInstance;
+	}
 
-    public void addHeaderToDisplay(GridPane gridPane) {
-        gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize() + " Left: " + market.getStock().getStockLeft()), 0, 0);
-        gridPane.add(new Label("Day: " + String.valueOf(day)), 1, 0);
-        gridPane.add(new Label("Fitness: " + maximumFitness), 2, 0);
-    }
+	public void initializeMarket(Integer stockSize) {
+		market = new Market(stockSize);
+	}
 
-    public void displayItemData(GridPane gridPane, int xPos, int yPos) {
+	public void addItem(String name, Integer size, Integer deliveryTime) {
+		market.getStock().getInventory().put(new Item(name, deliveryTime, size, market.getStock()), 0);
+	}
 
-        market.createCashpoint();
+	public void addHeaderToDisplay(GridPane gridPane) {
+		gridPane.add(new Label("Stock Size: " + market.getStock().getMaxSize() + " Left: " + market.getStock().getStockLeft()), 0, 0);
+		gridPane.add(new Label("Day: " + String.valueOf(day)), 1, 0);
+		gridPane.add(new Label("Fitness: " + maximumFitness), 2, 0);
+	}
 
-        Button sellEachItem = new Button("Sell each Item + next day!");
-        sellEachItem.setOnAction(e -> sellEachItemOnce());
-        gridPane.add(sellEachItem, 0, 1);
+	public void displayItemData(GridPane gridPane, int xPos, int yPos) {
 
-        for (Map.Entry<Item, Integer> inventoryEntry : market.getStock().getInventory().entrySet()) {
-            gridPane.add(new Label(inventoryEntry.getKey().getName()), xPos++, yPos);
-            gridPane.add(new Label("|"), xPos++, yPos);
-            gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getSize())), xPos++, yPos);
-            gridPane.add(new Label("|"), xPos++, yPos);
-            gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getDeliveryTime())), xPos++, yPos);
-            gridPane.add(new Label("|"), xPos++, yPos);
-            gridPane.add(new Label(String.valueOf(inventoryEntry.getValue() / inventoryEntry.getKey().getSize())), xPos++, yPos);
-            gridPane.add(new Label("|"), xPos++, yPos);
-            gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getThreshold())), xPos++, yPos);
-            gridPane.add(new Label("|"), xPos++, yPos);
-            gridPane.add(new Label(inventoryEntry.getKey().getRecommendation()), xPos++, yPos);
-            Button sellItem = new Button("Sell Item!");
-            sellItem.setOnAction(e -> sellItemAndRefreshDisplay(inventoryEntry.getKey().getName()));
-            gridPane.add(sellItem, xPos++, yPos);
-            Button buyItem = new Button("Buy for Inventory!");
-            buyItem.setOnAction(e -> buyForInventoryAndRefreshDisplay(inventoryEntry.getKey()));
-            gridPane.add(buyItem, xPos, yPos++);
+		market.createCashpoint();
 
-            xPos = 0;
-        }
-    }
+		Button sellEachItem = new Button("Simulate selling an item each day!");
+		sellEachItem.setOnAction(e -> simulate());
+		gridPane.add(sellEachItem, 0, 1);
 
-    public void sellEachItemOnce() {
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(() -> {
-            Platform.runLater(() -> {
-                for (Map.Entry<Item, Integer> stockEntry : market.getStock().getInventory().entrySet()) {
-                    market.getRandomCashpoint().sellItem(stockEntry.getKey().getName());
-                }
-                day++;
-                buyIfRecommended();
-                market.getOrders().nextDay();
-                refreshDisplay();
-            });
-        }, 1, 100, TimeUnit.MILLISECONDS);
-    }
+		Button stopSimulation = new Button("Stop simulation!");
+		stopSimulation.setOnAction(e -> stopSimulation());
+		gridPane.add(stopSimulation, 1, 1);
 
-    public void buyIfRecommended() {
-        for (Item item : market.getStock().getInventory().keySet()) {
-            if ("Buy for Inventory!".equals(item.getRecommendation())) {
-                buyForInventoryAndRefreshDisplay(item);
-            }
-        }
-    }
+		for (Map.Entry <Item, Integer> inventoryEntry : market.getStock().getInventory().entrySet()) {
+			gridPane.add(new Label(inventoryEntry.getKey().getName()), xPos++, yPos);
+			gridPane.add(new Label("|"), xPos++, yPos);
+			gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getSize())), xPos++, yPos);
+			gridPane.add(new Label("|"), xPos++, yPos);
+			gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getDeliveryTime())), xPos++, yPos);
+			gridPane.add(new Label("|"), xPos++, yPos);
+			gridPane.add(new Label(String.valueOf(inventoryEntry.getValue() / inventoryEntry.getKey().getSize())), xPos++, yPos);
+			gridPane.add(new Label("|"), xPos++, yPos);
+			gridPane.add(new Label(String.valueOf(inventoryEntry.getKey().getThreshold())), xPos++, yPos);
+			gridPane.add(new Label("|"), xPos++, yPos);
+			gridPane.add(new Label(inventoryEntry.getKey().getRecommendation()), xPos, yPos++);
 
-    /**
-     * Ruft die Methode zum Kauf einer Ware auf und aktualisiert die Anzeige
-     *
-     * @param itemToBuy
-     */
-    private void buyForInventoryAndRefreshDisplay(Item itemToBuy) {
-        market.getOrders().order(itemToBuy);
-        refreshDisplay();
-    }
+			xPos = 0;
+		}
+		for(String perfectResult : perfect) {
+			gridPane.add(new Label(perfectResult), 0, yPos++);
+		}
+	}
 
-    /**
-     * Ruft die Methode zum Verkauf einer Ware auf und aktualisiert die Anzeige
-     *
-     * @param itemName
-     */
-    private void sellItemAndRefreshDisplay(String itemName) {
-        market.getRandomCashpoint().sellItem(itemName);
-        refreshDisplay();
-    }
+	private void simulate() {
+		executorService = new ScheduledThreadPoolExecutor(8);
+		taskList.add(executorService.scheduleAtFixedRate(() -> {
+			buyIfRecommended();
+			System.out.println("Sell each item once: ");
+			for (Map.Entry <Item, Integer> stockEntry : market.getStock().getInventory().entrySet())
+				market.getRandomCashpoint().sellItem(stockEntry.getKey());
+			day++;
+			market.getOrders().storeDelivery();
+			if (day > 7) {
+				calculateFitnessAndThreshold();
+			}
+			market.getOrders().nextDay();
+			market.refreshRecommendations();
+			Platform.runLater(EvolutionaryStockSimulation::initMainWindow);
+		}, 1, 100, TimeUnit.MILLISECONDS));
+	}
 
-    /**
-     * Hier wird die Nachfrage neu berechnet, die Empfehlungen angepasst und
-     * das Hauptfenster neu gerendert.
-     */
-    private void refreshDisplay() {
-        market.refresh();
-        if (day > 10) {
-            calculateFitnessAndThreshold();
-        }
-        EvolutionaryStockSimulation.initMainWindow();
-    }
+	private void stopSimulation() {
+		for (ScheduledFuture futureTask : taskList) futureTask.cancel(true);
+		executorService.shutdownNow();
+	}
 
-    public double calculateFitnessAndThreshold() {
-        double cumulatedFitness = 0;
+	private void buyIfRecommended() {
+		for (Item item : market.getStock().getInventory().keySet())
+			if ("Buy for Inventory!".equals(item.getRecommendation())) for (int i = 0; i <= item.getThreshold(); i++) market.getOrders().order(item);
+	}
 
-        // Gesamte Fitness errechnen und "schlechteste" Ware finden.
-        Item worstItem = null;
-        for (Item item : market.getStock().getInventory().keySet()) {
-            double itemFitness = item.getOrderRule().calculateFitness();
-            if (worstItem == null || worstItem.getOrderRule().calculateFitness() > item.getOrderRule().calculateFitness()) {
-                worstItem = item;
-            }
-            cumulatedFitness += itemFitness;
-        }
-        cumulatedFitness = cumulatedFitness / market.getStock().getInventory().size();
-        if (cumulatedFitness < maximumFitness) {
-            for (Item item : market.getStock().getInventory().keySet()) {
-                if (item.equals(worstItem)) {
-                    enhanceWorstItem(item);
-                    continue;
-                }
-                item.getOrderRule().resetThreshold();
-                item.getOrderRule().mutateThreshold();
-            }
-        } else {
-            maximumFitness = cumulatedFitness;
-            for (Item item : market.getStock().getInventory().keySet()) {
-                if (item.equals(worstItem)) {
-                    enhanceWorstItem(item);
-                    continue;
-                }
-                item.getOrderRule().saveThreshold();
-                item.getOrderRule().mutateThreshold();
-            }
-        }
-        for (Item item : market.getStock().getInventory().keySet()) {
-            if (item.getThreshold() * item.getSize() >= market.getStock().getMaxSize()) {
-                item.setThreshold(item.getThreshold() - 1);
-            }
-        }
+	private double calculateFitnessAndThreshold() {
+		double cumulatedFitness = 0;
 
-        return cumulatedFitness;
-    }
+		// Gesamte Fitness errechnen und "schlechteste" Ware finden.
+		Item worstItem = null;
+		for (Item item : market.getStock().getInventory().keySet()) {
+			double itemFitness = item.getOrderRule().calculateFitness();
+			if (worstItem == null || worstItem.getOrderRule().calculateFitness() > item.getOrderRule().calculateFitness()) {
+				worstItem = item;
+			}
+			cumulatedFitness += itemFitness;
+		}
+		cumulatedFitness = cumulatedFitness / market.getStock().getInventory().size();
+		if (cumulatedFitness < maximumFitness) market.getStock().getInventory().keySet().forEach(item -> item.getOrderRule().resetThreshold());
+		else {
+			maximumFitness = cumulatedFitness;
+			for (Item item : market.getStock().getInventory().keySet()) item.getOrderRule().saveThreshold();
+		}
+		for (Item item : market.getStock().getInventory().keySet()) {
+			if (item.equals(worstItem)) {
+				enhanceWorstItem(item);
+				continue;
+			}
+			item.getOrderRule().mutateThreshold();
+		}
+		if (cumulatedFitness == 1.0) {
+			StringBuilder builder = new StringBuilder();
+			builder.append("Perfect Fitness achieved: ");
+			for (Item item : market.getStock().getInventory().keySet()) {
+				builder.append(" Item \"" + item.getName() + "\" Threshold: " + item.getThreshold());
+			}
+			perfect.add(builder.toString());
+		}
 
-    private void enhanceWorstItem(Item item) {
-        // Schlechteste Ware wird verbessert
-        if (item.getOrderRule().getCustomerUnhappiness() > item.getOrderRule().getStockOverflow()) {
-            item.setThreshold(item.getThreshold() + 1);
-        }
-        if (item.getOrderRule().getCustomerUnhappiness() < item.getOrderRule().getStockOverflow() && item.getThreshold() > 0) {
-            item.setThreshold(item.getThreshold() - 1);
-        }
-    }
+		return cumulatedFitness;
+	}
+
+	private void enhanceWorstItem(Item item) {
+		// Schlechteste Ware wird verbessert
+		if (item.getOrderRule().getCustomerUnhappiness() > item.getOrderRule().getStockOverflow()) {
+			item.setThreshold(item.getThreshold() + 1);
+		}
+		if (item.getOrderRule().getCustomerUnhappiness() < item.getOrderRule().getStockOverflow() && item.getThreshold() > 0) {
+			item.setThreshold(item.getThreshold() - 1);
+		}
+	}
 }

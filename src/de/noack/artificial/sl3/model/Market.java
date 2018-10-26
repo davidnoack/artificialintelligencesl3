@@ -1,7 +1,5 @@
 package de.noack.artificial.sl3.model;
 
-import de.noack.artificial.sl3.gui.EvolutionaryStockSimulation;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,21 +21,17 @@ public class Market {
         cashpoints.add(new Cashpoint(this));
     }
 
-    public void refresh() {
+    public void refreshRecommendations() {
         for (Map.Entry<Item, Integer> itemsInStock : stock.getInventory().entrySet()) {
             Item item = itemsInStock.getKey();
-            double count = itemsInStock.getValue().doubleValue();
             String buy = "Buy for Inventory!";
             System.out.println(item.getName() + " " + item.getThreshold());
             System.out.println("Fitness: " + item.getOrderRule().calculateFitness());
-            if (count <= item.getThreshold()) {
+            if (itemsInStock.getValue() <= item.getThreshold()) {
                 item.setRecommendation(buy);
             } else {
                 item.setRecommendation("");
             }
-        }
-        for (Item item : orders.getDelivery()) {
-            stock.putToInventory(item);
         }
     }
 
