@@ -14,9 +14,8 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 /**
- * Der LogicHandler kapselt alle Zugriffe von außen auf das Modell. Er initialisiert den Markt und damit
- * den Kontext der Anwendung. Er gibt alle Daten des Modells auf der Oberfläche aus und steuert die
- * Zugriffe welche über die Oberfläche getätigt werden.
+ * Der LogicHandler kapselt alle Zugriffe von außen auf das Modell. Er initialisiert den Markt und damit den Kontext der Anwendung. Er gibt alle Daten
+ * des Modells auf der Oberfläche aus und steuert die Zugriffe welche über die Oberfläche getätigt werden.
  */
 public class LogicHandler {
 
@@ -78,9 +77,8 @@ public class LogicHandler {
 	}
 
 	/**
-	 * Erstellt jeweils einen Button zum Starten und einen zum Stoppen der Simulation. Des weiteren werden die
-	 * Daten der Waren ausgegeben und überprüft, ob ein "perfektes" Ergebnis vorliegt. Dieses wird, sofern
-	 * vorhanden, auch ausgegeben.
+	 * Erstellt jeweils einen Button zum Starten und einen zum Stoppen der Simulation. Des weiteren werden die Daten der Waren ausgegeben und
+	 * überprüft, ob ein "perfektes" Ergebnis vorliegt. Dieses wird, sofern vorhanden, auch ausgegeben.
 	 *
 	 * @param gridPane
 	 * @param xPos
@@ -114,10 +112,8 @@ public class LogicHandler {
 	}
 
 	/**
-	 * Hier wird die Simulation der Tage angestoßen. Je Tag wird jede Ware einmal verkauft,
-	 * es wird, falls empfohlen, nachbestellt, die Lieferungen des Tages werden abgeholt und
-	 * der nächste Tag wird begonnen. Zudem werden die Empfehlungen aktualisiert und der
-	 * Hauptbildschirm neu gerendert.
+	 * Hier wird die Simulation der Tage angestoßen. Je Tag wird jede Ware einmal verkauft, es wird, falls empfohlen, nachbestellt, die Lieferungen
+	 * des Tages werden abgeholt und der nächste Tag wird begonnen. Zudem werden die Empfehlungen aktualisiert und der Hauptbildschirm neu gerendert.
 	 */
 	private void simulate() {
 		executorService = new ScheduledThreadPoolExecutor(8);
@@ -153,12 +149,10 @@ public class LogicHandler {
 	}
 
 	/**
-	 * Ermittelt anhand der individuellen Fitnesswerte der Items den aktuellen Gesamtfitnesswert.
-	 * Vorsicht vorm Overfitting! Es wird die "schlechteste Ware" ermittelt und verbessert. Zudem
-	 * wird geprüft, ob die aktuelle Fitness die Gesamtfitness übersteigt. Ist die Fitness schlechter,
-	 * wird für jedes Item überprüft, ob die Kundenzufriedenheit schlechter ist, oder die Lagerüber-
-	 * füllung. Falls das Ergebnis besser ist als das vorher maximale, werden die Thresholds gespeichert,
-	 * damit diese später ausgegeben werden können.
+	 * Ermittelt anhand der individuellen Fitnesswerte der Items den aktuellen Gesamtfitnesswert. Vorsicht vorm Overfitting! Es wird die "schlechteste
+	 * Ware" ermittelt und verbessert. Zudem wird geprüft, ob die aktuelle Fitness die Gesamtfitness übersteigt. Ist die Fitness schlechter, wird für
+	 * jedes Item überprüft, ob die Kundenzufriedenheit schlechter ist, oder die Lagerüber- füllung. Falls das Ergebnis besser ist als das vorher
+	 * maximale, werden die Thresholds gespeichert, damit diese später ausgegeben werden können.
 	 *
 	 * @return Fitnesswert
 	 */
@@ -194,6 +188,8 @@ public class LogicHandler {
 				continue;
 			}
 			item.getOrderRule().mutateThreshold();
+			if (item.getThreshold() > Double.valueOf(market.getStock().getMaxSize()) / Double.valueOf(item.getSize()))
+				item.setThreshold(item.getThreshold() - 1);
 		}
 
 		return currentFitness;

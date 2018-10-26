@@ -29,7 +29,9 @@ public class Market {
 	public void refreshRecommendations() {
 		for (Map.Entry <Item, Integer> itemsInStock : stock.getInventory().entrySet()) {
 			Item item = itemsInStock.getKey();
-			if (itemsInStock.getValue() <= item.getThreshold()) item.setRecommendation("Buy for Inventory!");
+			if ((Double.valueOf(itemsInStock.getValue()) / Double.valueOf(item.getSize()))
+					<= item.getThreshold()) item.setRecommendation("Buy for " +
+					"Inventory!");
 			else item.setRecommendation("");
 		}
 	}
