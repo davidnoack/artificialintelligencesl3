@@ -45,13 +45,12 @@ public class LogicHandler {
 	}
 
 	/**
-	 * Initialisiert den Markt mit der über die Oberfläche übermittelten Lagergröße und erstellt eine Kasse
+	 * Initialisiert den Markt mit der über die Oberfläche übermittelten Lagergröße.
 	 *
 	 * @param stockSize
 	 */
 	public void initializeMarket(Integer stockSize) {
 		market = new Market(stockSize);
-		market.createCashpoint();
 	}
 
 	/**
@@ -125,7 +124,7 @@ public class LogicHandler {
 		taskList.add(executorService.scheduleAtFixedRate(() -> {
 			buyIfRecommended();
 			for (Map.Entry <Item, Integer> stockEntry : market.getStock().getInventory().entrySet())
-				market.getRandomCashpoint().sellItem(stockEntry.getKey());
+				market.getStock().retrieveSellableItem(stockEntry.getKey());
 			day++;
 			market.getOrders().storeDelivery();
 			calculateFitnessAndThreshold();
