@@ -29,6 +29,8 @@ public class Market {
 	public void refreshRecommendations() {
 		for (Map.Entry <Item, Integer> itemsInStock : stock.getInventory().entrySet()) {
 			Item item = itemsInStock.getKey();
+			// Wenn Threshold unterhalb der Warenanzahl, soll eine Kaufempfehlung ausgegeben werden.
+			// Double, um Probleme mit Integer-Divisionen zu vermeiden.
 			if ((Double.valueOf(itemsInStock.getValue()) / Double.valueOf(item.getSize()))
 					<= item.getThreshold()) item.setRecommendation("Buy for " +
 					"Inventory!");

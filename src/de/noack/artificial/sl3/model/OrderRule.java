@@ -19,6 +19,7 @@ public class OrderRule {
 	private double customerUnhappiness;
 	private double stockOverflow;
 
+	// "Eltern"-Grenze
 	private int oldThreshold;
 
 	public OrderRule(Item parentItem) {
@@ -66,25 +67,22 @@ public class OrderRule {
 	 * Mit einer Wahrscheinlichkeit von 1% wird der Wert sogar auf 0 zurückgesetzt.
 	 */
 	public void mutateThreshold() {
-		if (new Random().nextDouble() < 0.1) {
+		if (new Random().nextDouble() < 0.01) {
 			parentItem.setThreshold(oldThreshold + 1);
-		} else if (new Random().nextDouble() < 0.1 && oldThreshold >= 1) {
+		} else if (new Random().nextDouble() < 0.01 && oldThreshold >= 1) {
 			parentItem.setThreshold(oldThreshold - 1);
-		} else if (new Random().nextDouble() < 0.05) {
+		} else if (new Random().nextDouble() < 0.005) {
 			parentItem.setThreshold(oldThreshold + 2);
-		} else if (new Random().nextDouble() < 0.05 && oldThreshold >= 2) {
+		} else if (new Random().nextDouble() < 0.005 && oldThreshold >= 2) {
 			parentItem.setThreshold(oldThreshold - 2);
-		} else if (new Random().nextDouble() < 0.025) {
+		} else if (new Random().nextDouble() < 0.0025) {
 			parentItem.setThreshold(oldThreshold + 3);
-		} else if (new Random().nextDouble() < 0.025 && oldThreshold >= 3) {
+		} else if (new Random().nextDouble() < 0.0025 && oldThreshold >= 3) {
 			parentItem.setThreshold(oldThreshold - 3);
-		} else if (new Random().nextDouble() < 0.0125) {
+		} else if (new Random().nextDouble() < 0.00125) {
 			parentItem.setThreshold(oldThreshold + 4);
-		} else if (new Random().nextDouble() < 0.0125 && oldThreshold >= 4) {
+		} else if (new Random().nextDouble() < 0.00125 && oldThreshold >= 4) {
 			parentItem.setThreshold(oldThreshold - 4);
-		} else if (new Random().nextDouble() < 0.01) {
-			oldThreshold = 0;
-			parentItem.setThreshold(oldThreshold);
 		}
 	}
 

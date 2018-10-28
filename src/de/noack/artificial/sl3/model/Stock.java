@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Stock stellt einen Bestand in Form eines Lagers dar. Dieser besitzt eine Maximalgröße, sowie ein Inventar. Der Bestand kann selbst Waren
- * nachbestellen.
+ * Stock stellt einen Bestand in Form eines Lagers dar. Dieser besitzt eine Maximalgröße,
+ * sowie ein Inventar. Der Bestand kann selbst Waren nachbestellen.
  */
 public class Stock {
 
@@ -25,8 +25,9 @@ public class Stock {
 	}
 
 	/**
-	 * Wenn genug Platz im Inventar ist, wird der Bestand um eine Ware erweitert. Zusätzlich wird eine etwaige
-	 * Lagerüberfüllung mittels Erhöhung des Wertes in der OrderRule angemahnt.
+	 * Wenn genug Platz im Inventar ist, wird der Bestand um eine Ware erweitert.
+	 * Zusätzlich wird eine etwaige Lagerüberfüllung mittels Erhöhung des Wertes
+	 * in der OrderRule angemahnt.
 	 *
 	 * @param item
 	 */
@@ -40,7 +41,8 @@ public class Stock {
 	}
 
 	/**
-	 * Prüft, ob die Summe der einzel lagernden Waren inkl. der zu kaufenden Menge die Größe des Lagers nicht übersteigen würden
+	 * Prüft, ob die Summe der einzel lagernden Waren inkl. der zu kaufenden Menge die
+	 * Größe des Lagers nicht übersteigen würden
 	 *
 	 * @param spaceNeeded
 	 * @return genug Platz vorhanden?
